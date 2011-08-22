@@ -27,6 +27,7 @@ import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.api.Environment;
 import org.jboss.weld.bootstrap.api.Service;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.as.server.deployment.DeploymentUnit;
 
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.Collections;
@@ -48,12 +49,14 @@ public class WeldContainer {
     private final WeldDeployment deployment;
     private final Environment environment;
     private final Map<String, BeanDeploymentArchive> beanDeploymentArchives;
+    private final String id;
     private volatile boolean started;
 
-    public WeldContainer(WeldDeployment deployment, Environment environment) {
+    public WeldContainer(String deploymentId, WeldDeployment deployment, Environment environment) {
         this.deployment = deployment;
         this.environment = environment;
         this.bootstrap = new WeldBootstrap();
+        this.id = deploymentId;
         Map<String, BeanDeploymentArchive> bdas = new HashMap<String, BeanDeploymentArchive>();
         for (BeanDeploymentArchive archive : deployment.getBeanDeploymentArchives()) {
             bdas.put(archive.getId(), archive);
@@ -76,7 +79,7 @@ public class WeldContainer {
         ClassLoader oldTccl = SecurityActions.getContextClassLoader();
         try {
             SecurityActions.setContextClassLoader(deployment.getModule().getClassLoader());
-            bootstrap.startContainer(environment, deployment);
+            bootstrap.startContainer(id, environment, deployment);
             bootstrap.startInitialization();
             bootstrap.deployBeans();
             bootstrap.validateBeans();

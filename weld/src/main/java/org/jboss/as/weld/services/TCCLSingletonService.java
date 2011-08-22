@@ -28,6 +28,7 @@ import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
 import org.jboss.weld.bootstrap.api.SingletonProvider;
+import org.jboss.weld.bootstrap.api.helpers.RegistrySingletonProvider;
 import org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider;
 
 /**
@@ -42,7 +43,8 @@ public class TCCLSingletonService implements Service<TCCLSingletonService> {
 
     @Override
     public void start(StartContext context) throws StartException {
-        SingletonProvider.initialize(new ModuleGroupSingletonProvider());
+        //SingletonProvider.initialize(new ModuleGroupSingletonProvider());
+        SingletonProvider.initialize(new RegistrySingletonProvider());
     }
 
     @Override
