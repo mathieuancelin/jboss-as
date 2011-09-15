@@ -67,15 +67,15 @@ public class ModuleGroupSingletonProvider extends SingletonProvider {
         // use Hashtable for concurrent access
         private final Map<ClassLoader, T> store = new Hashtable<ClassLoader, T>();
 
-        public T get(String id) {
-            T instance = store.get(getClassLoader());
+        public T get(String contextId) {
+            T instance = store.get(findParentModuleCl(getClassLoader()));
             if (instance == null) {
                 throw new IllegalStateException("Singleton not set for " + getClassLoader());
             }
             return instance;
         }
 
-        public void set(String id, T object) {
+        public void set(String contextId, T object) {
             ClassLoader classLoader = getClassLoader();
             store.put(classLoader, object);
             if (deploymentClassLoaders.containsKey(classLoader)) {
@@ -85,7 +85,7 @@ public class ModuleGroupSingletonProvider extends SingletonProvider {
             }
         }
 
-        public void clear(String id) {
+        public void clear(String contextId) {
             ClassLoader classLoader = getClassLoader();
             store.remove(classLoader);
             if (deploymentClassLoaders.containsKey(classLoader)) {
@@ -95,8 +95,8 @@ public class ModuleGroupSingletonProvider extends SingletonProvider {
             }
         }
 
-        public boolean isSet(String id) {
-            return store.containsKey(getClassLoader());
+        public boolean isSet(String contextId) {
+            return store.containsKey(findParentModuleCl(getClassLoader()));
         }
 
         /**

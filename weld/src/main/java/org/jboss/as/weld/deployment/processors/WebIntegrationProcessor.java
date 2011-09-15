@@ -50,6 +50,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.jboss.metadata.javaee.spec.ParamValueMetaData;
+import org.jboss.weld.Container;
 
 /**
  * Deployment processor that integrates weld into the web tier
@@ -139,6 +141,10 @@ public class WebIntegrationProcessor implements DeploymentUnitProcessor {
             webMetaData.setFilterMappings(filterMappings);
         }
         filterMappings.add(CPFM);
+        ParamValueMetaData deploymentId = new ParamValueMetaData();
+        deploymentId.setParamName(Container.CONTEXT_ID_KEY);
+        deploymentId.setParamValue(deploymentUnit.getName());
+        webMetaData.getContextParams().add(deploymentId);
     }
 
     @Override
