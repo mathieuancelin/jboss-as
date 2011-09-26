@@ -48,9 +48,10 @@ public class WeldContainer {
     private final WeldDeployment deployment;
     private final Environment environment;
     private final Map<String, BeanDeploymentArchive> beanDeploymentArchives;
+    private final String deploymentId;
     private volatile boolean started;
 
-    public WeldContainer(WeldDeployment deployment, Environment environment) {
+    public WeldContainer(String deploymentId, WeldDeployment deployment, Environment environment) {
         this.deployment = deployment;
         this.environment = environment;
         this.bootstrap = new WeldBootstrap();
@@ -60,6 +61,7 @@ public class WeldContainer {
         }
         bdas.put(deployment.getAdditionalBeanDeploymentArchive().getId(), deployment.getAdditionalBeanDeploymentArchive());
         this.beanDeploymentArchives = Collections.unmodifiableMap(bdas);
+        this.deploymentId = deploymentId;
     }
 
     /**
@@ -76,7 +78,7 @@ public class WeldContainer {
         ClassLoader oldTccl = SecurityActions.getContextClassLoader();
         try {
             SecurityActions.setContextClassLoader(deployment.getModule().getClassLoader());
-            bootstrap.startContainer(environment, deployment);
+            bootstrap.startContainer(deploymentId, environment, deployment);
             bootstrap.startInitialization();
             bootstrap.deployBeans();
             bootstrap.validateBeans();

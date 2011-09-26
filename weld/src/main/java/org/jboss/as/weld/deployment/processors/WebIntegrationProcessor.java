@@ -50,6 +50,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.jboss.metadata.javaee.spec.ParamValueMetaData;
+import org.jboss.weld.Container;
 
 /**
  * Deployment processor that integrates weld into the web tier
@@ -111,7 +113,10 @@ public class WebIntegrationProcessor implements DeploymentUnitProcessor {
             log.info("Not installing Weld web tier integration as no merged web metadata found");
             return;
         }
-
+        ParamValueMetaData deploymentId = new ParamValueMetaData();
+        deploymentId.setParamName(Container.CONTEXT_ID_KEY);
+        deploymentId.setParamValue(deploymentUnit.getName());
+        webMetaData.getContextParams().add(deploymentId);
         List<ListenerMetaData> listeners = webMetaData.getListeners();
         if (listeners == null) {
             listeners = new ArrayList<ListenerMetaData>();

@@ -180,7 +180,7 @@ public class WeldDeploymentProcessor implements DeploymentUnitProcessor {
 
         final WeldDeployment deployment = new WeldDeployment(beanDeploymentArchives, extensions, module, subDeploymentLoaders);
 
-        final WeldContainer weldContainer = new WeldContainer(deployment, Environments.EE_INJECT);
+        final WeldContainer weldContainer = new WeldContainer(deploymentUnit.getName(), deployment, Environments.EE_INJECT);
         //hook up validation service
         //TODO: we need to change weld so this is a per-BDA service
         final ValidatorFactory factory = deploymentUnit.getAttachment(BeanValidationAttachments.VALIDATOR_FACTORY);
