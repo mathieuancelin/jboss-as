@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jboss.weld.Container;
 
 /**
  * Interceptor for applying the JSR-299 specific interceptor bindings.
@@ -185,16 +186,19 @@ public class Jsr299BindingsInterceptor implements Serializable, org.jboss.invoca
         private final String ejbName;
         private final InterceptionType interceptionType;
         private final ClassLoader classLoader;
+        private final String deploymentId;
 
-        public Factory(final String beanArchiveId, final String ejbName, final InterceptionType interceptionType, final ClassLoader classLoader) {
+        public Factory(final String beanArchiveId, final String ejbName, final InterceptionType interceptionType, final ClassLoader classLoader, final String deploymentId) {
             this.beanArchiveId = beanArchiveId;
             this.ejbName = ejbName;
             this.interceptionType = interceptionType;
             this.classLoader = classLoader;
+            this.deploymentId = deploymentId;
         }
 
         @Override
         public org.jboss.invocation.Interceptor create(final Component component, final InterceptorFactoryContext context) {
+            context.getContextData().put(Container.CONTEXT_ID_KEY, deploymentId);
             return new Jsr299BindingsInterceptor((BeanManagerImpl) weldContainer.getValue().getBeanManager(beanArchiveId), ejbName, context, interceptionType, classLoader);
         }
 
