@@ -84,6 +84,11 @@ public class WebIntegrationProcessor implements DeploymentUnitProcessor {
         CPF.setFilterName("Weld Conversation Propagation Filter");
         CPF.setFilterClass(CONVERSATION_FILTER);
         CPF.setAsyncSupported(true);
+        List<ParamValueMetaData> initParams = CPF.getInitParam();
+        if (initParams == null) {
+            CPF.setInitParam(new ArrayList<ParamValueMetaData>());
+            initParams = CPF.getInitParam();
+        }
         CPFM = new FilterMappingMetaData();
         CPFM.setFilterName("Weld Conversation Propagation Filter");
         CPFM.setUrlPatterns(Arrays.asList("/*"));
@@ -91,6 +96,11 @@ public class WebIntegrationProcessor implements DeploymentUnitProcessor {
 
     @Override
     public void deploy(DeploymentPhaseContext phaseContext) throws DeploymentUnitProcessingException {
+        final ParamValueMetaData deploymentId = new ParamValueMetaData();
+        deploymentId.setParamName(Container.CONTEXT_ID_KEY);
+        deploymentId.setParamValue(phaseContext.getDeploymentUnit().getName());
+        deploymentId.setId(Container.CONTEXT_ID_KEY);
+        CPF.getInitParam().add(deploymentId);
         final DeploymentUnit deploymentUnit = phaseContext.getDeploymentUnit();
         final EEModuleDescription module = deploymentUnit.getAttachment(Attachments.EE_MODULE_DESCRIPTION);
         final EEApplicationClasses applicationClasses = deploymentUnit.getAttachment(Attachments.EE_APPLICATION_CLASSES_DESCRIPTION);
@@ -113,7 +123,7 @@ public class WebIntegrationProcessor implements DeploymentUnitProcessor {
             log.info("Not installing Weld web tier integration as no merged web metadata found");
             return;
         }
-
+        webMetaData.getContextParams().add(deploymentId);
         List<ListenerMetaData> listeners = webMetaData.getListeners();
         if (listeners == null) {
             listeners = new ArrayList<ListenerMetaData>();
@@ -141,10 +151,7 @@ public class WebIntegrationProcessor implements DeploymentUnitProcessor {
             webMetaData.setFilterMappings(filterMappings);
         }
         filterMappings.add(CPFM);
-        ParamValueMetaData deploymentId = new ParamValueMetaData();
-        deploymentId.setParamName(Container.CONTEXT_ID_KEY);
-        deploymentId.setParamValue(deploymentUnit.getName());
-        webMetaData.getContextParams().add(deploymentId);
+        System.out.println("adding " + Container.CONTEXT_ID_KEY + " with value " + deploymentUnit.getName());
     }
 
     @Override
