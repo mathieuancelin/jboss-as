@@ -63,13 +63,18 @@ public class WeldContextSetup implements SetupAction {
     private final ThreadLocal<Map<String, Object>> sessionContexts = new ContextMapThreadLocal();
     private final ThreadLocal<Map<String, Object>> requestContexts = new ContextMapThreadLocal();
     private final ThreadLocal<BoundRequest> boundRequests = new ThreadLocal<BoundRequest>();
+    private final String deploymentId;
+
+    public WeldContextSetup(String deploymentId) {
+        this.deploymentId = deploymentId;
+    }
 
     @SuppressWarnings("unchecked")
     public void setup(Map<String, Object> properties) {
         try {
             final BeanManager manager = (BeanManager) new InitialContext().lookup(STANDARD_BEAN_MANAGER_JNDI_NAME);
 
-            if (manager != null && Container.available()) {
+            if (manager != null && Container.available(deploymentId)) {
 
                 final Bean<BoundSessionContext> sessionContextBean = (Bean<BoundSessionContext>) manager.resolve(manager
                         .getBeans(BoundSessionContext.class, BoundLiteral.INSTANCE));
@@ -107,7 +112,7 @@ public class WeldContextSetup implements SetupAction {
         try {
             final BeanManager manager = (BeanManager) new InitialContext().lookup("java:comp/BeanManager");
 
-            if (manager != null && Container.available()) {
+            if (manager != null && Container.available(deploymentId)) {
                 final Bean<BoundSessionContext> sessionContextBean = (Bean<BoundSessionContext>) manager.resolve(manager.getBeans(
                         BoundSessionContext.class, BoundLiteral.INSTANCE));
                 CreationalContext<?> ctx = manager.createCreationalContext(sessionContextBean);
