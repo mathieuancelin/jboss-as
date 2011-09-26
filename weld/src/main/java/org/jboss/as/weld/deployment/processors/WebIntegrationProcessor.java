@@ -121,6 +121,9 @@ public class WebIntegrationProcessor implements DeploymentUnitProcessor {
         ParamValueMetaData deploymentId = new ParamValueMetaData();
         deploymentId.setParamName(Container.CONTEXT_ID_KEY);
         deploymentId.setParamValue(deploymentUnit.getName());
+        if (webMetaData.getContextParams() == null) {
+            webMetaData.setContextParams(new ArrayList<ParamValueMetaData>());
+        }
         webMetaData.getContextParams().add(deploymentId);
         List<ListenerMetaData> listeners = webMetaData.getListeners();
         if (listeners == null) {
