@@ -42,6 +42,7 @@ import org.jboss.weld.bootstrap.spi.BeansXml;
 import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Set;
+import org.jboss.as.weld.WeldOSGiDeploymentMarker;
 
 /**
  * Deployment processor that finds <literal>beans.xml</literal> files and attaches the information to the deployment
@@ -109,9 +110,11 @@ public class BeansXmlProcessor implements DeploymentUnitProcessor {
             WeldDeploymentMetadata deploymentMetadata = new WeldDeploymentMetadata(beanArchiveMetadata);
             deploymentUnit.putAttachment(WeldDeploymentMetadata.ATTACHMENT_KEY, deploymentMetadata);
             // mark the deployment as requiring CDI integration
-            WeldDeploymentMarker.mark(deploymentUnit);
-            if (deploymentUnit.getParent() != null) {
-                WeldDeploymentMarker.mark(deploymentUnit.getParent());
+            if (!WeldOSGiDeploymentMarker.isWeldOSGiDeployment(deploymentUnit)) {
+                WeldDeploymentMarker.mark(deploymentUnit);
+                if (deploymentUnit.getParent() != null) {
+                    WeldDeploymentMarker.mark(deploymentUnit.getParent());
+                }
             }
         }
     }
