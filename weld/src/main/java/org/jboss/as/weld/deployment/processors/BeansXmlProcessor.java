@@ -38,6 +38,7 @@ import org.jboss.as.server.deployment.module.ModuleRootMarker;
 import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.as.weld.WeldDeploymentMarker;
 import org.jboss.as.weld.WeldLogger;
+import org.jboss.as.weld.WeldOSGiDeploymentMarker;
 import org.jboss.as.weld.WeldMessages;
 import org.jboss.as.weld.deployment.BeanArchiveMetadata;
 import org.jboss.as.weld.deployment.BeansXmlParser;
@@ -116,9 +117,11 @@ public class BeansXmlProcessor implements DeploymentUnitProcessor {
             WeldDeploymentMetadata deploymentMetadata = new WeldDeploymentMetadata(beanArchiveMetadata);
             deploymentUnit.putAttachment(WeldDeploymentMetadata.ATTACHMENT_KEY, deploymentMetadata);
             // mark the deployment as requiring CDI integration
-            WeldDeploymentMarker.mark(deploymentUnit);
-            if (deploymentUnit.getParent() != null) {
-                WeldDeploymentMarker.mark(deploymentUnit.getParent());
+            if (!WeldOSGiDeploymentMarker.isWeldOSGiDeployment(deploymentUnit)) {
+                WeldDeploymentMarker.mark(deploymentUnit);
+                if (deploymentUnit.getParent() != null) {
+                    WeldDeploymentMarker.mark(deploymentUnit.getParent());
+                }
             }
         }
     }

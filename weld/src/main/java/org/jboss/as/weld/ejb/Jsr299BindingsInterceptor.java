@@ -45,6 +45,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jboss.weld.Container;
+import java.util.concurrent.atomic.AtomicReference;
+import org.jboss.as.naming.ManagedReference;
+import org.jboss.as.naming.ValueManagedReference;
+import org.jboss.msc.value.ImmediateValue;
+
 
 /**
  * Interceptor for applying the JSR-299 specific interceptor bindings.
